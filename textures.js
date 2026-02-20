@@ -1,0 +1,31 @@
+const TEXTURES = {
+    // Игрок (белый скафандр)
+    player: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABmJLR0QA/wD/AP+gvaeTAAAA9UlEQVRYhe2WMQ6CMBSGP0pCnJxcOImjJ3D1BO7G6O7k6g10Y4JOJu5O6gE0xiTo8yVpgbbSUohh4EuGpn3f+9q3pS3wR1IKAJBK0VrrWmspo9GstQ4h3AAopQ5mZgAYhgERkWa01uuUz3meYYyB1hrGGOi6DlLKd+vvbwYAcM4BAEII8DwPIQS4rntn/jUDzjkAQCmF4zjgnAMA4JzDGPNrAxhjMMYgpYSUEpxzKKU+9s9PQAiB4zggpaSUEkR0yzjGmOlYKaW01lpr7b3XUsq41hjjvYda61trDRGRAOCcQwgBIoJS6uN+jDHkeQ4A4Jx/BuO99zFgjIEQAgCglHo+lNaa1lojhIBS6n/gnANjjJVS9F8eIyI45wAAAABJRU5ErkJggg==',
+    
+    // Враг разведчик (маленький красный)
+    enemyScout: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABmJLR0QA/wD/AP+gvaeTAAAAi0lEQVRYhe3VMQ6AIAwF0E7G4O4V9Aq6eQY3E2c3b+BuYmJAIfxJaUuL6S/9Bdq8tgV4mWMMAJi7u7t7VSmlJYQwF2OstaSUmqSUWkqptZRSa6211lprrbXWWmuttdZaa6211lprrbXWWmuttdZaa6211lprrbXWWmuttdZaa/3Vk5mNENG+9x4i+naLiD4i+gIWFxjD5iF6NQAAAABJRU5ErkJggg==',
+    
+    // Враг воин (большой красный)
+    enemyWarrior: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABmJLR0QA/wD/AP+gvaeTAAAAk0lEQVRYhe3VMQ6AIAwF0E7G4O4V9Aq6eQY3E2c3b+BuYmJAIfxJaUuL6S/9Fdq8tgV4mWMMAJi7u7t7VSmlJYQwF2OttaSUmqSUWkqptZRSa6211lprrbXWWmuttdZaa6211lprrbXWWmuttdZaa6211lprrbXWWmuttdZaa/3Vk5mNENG+9x4i+raLiD4i+gIWFxjD5iF6NQAAAABJRU5ErkJggg==',
+    
+    // Враг босс (огромный красный с короной)
+    enemyBoss: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABmJLR0QA/wD/AP+gvaeTAAAAk0lEQVRYhe3VMQ6AIAwF0E7G4O4V9Aq6eQY3E2c3b+BuYmJAIfxJaUuL6S/9Fdq8tgV4mWMMAJi7u7t7VSmlJYQwF2OttaSUmqSUWkqptZRSa6211lprrbXWWmuttdZaa6211lprrbXWWmuttdZaa6211lprrbXWWmuttdZaa/3Vk5mNENG+9x4i+raLiD4i+gIWFxjD5iF6NQAAAABJRU5ErkJggg==',
+    
+    // Шахта
+    miner: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABmJLR0QA/wD/AP+gvaeTAAAAhklEQVRYhe3VMQ6AIAwF0E7G4O4V9Aq6eQY3E2c3b+BuYmJAIfxJaUuL6S/9Fdq8tgV4mWMMAJi7u7t7VSmlJYQwF2OttaSUmqSUWkqptZRSa6211lprrbXWWmuttdZaa6211lprrbXWWmuttdZaa6211lprrbXWWmuttdb6q1dVA2MMm4cAAAAASUVORK5CYII=',
+    
+    // База
+    base: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABmJLR0QA/wD/AP+gvaeTAAAAhklEQVRYhe3VMQ6AIAwF0E7G4O4V9Aq6eQY3E2c3b+BuYmJAIfxJaUuL6S/9Fdq8tgV4mWMMAJi7u7t7VSmlJYQwF2OttaSUmqSUWkqptZRSa6211lprrbXWWmuttdZaa6211lprrbXWWmuttdZaa6211lprrbXWWmuttdb6q1dVA2MMm4cAAAAASUVORK5CYII=',
+    
+    // Ресурс железо
+    iron: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABmJLR0QA/wD/AP+gvaeTAAAAhklEQVRYhe3VMQ6AIAwF0E7G4O4V9Aq6eQY3E2c3b+BuYmJAIfxJaUuL6S/9Fdq8tgV4mWMMAJi7u7t7VSmlJYQwF2OttaSUmqSUWkqptZRSa6211lprrbXWWmuttdZaa6211lprrbXWWmuttdZaa6211lprrbXWWmuttdb6q1dVA2MMm4cAAAAASUVORK5CYII=',
+    
+    // Ресурс кремний
+    silicon: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABmJLR0QA/wD/AP+gvaeTAAAAhklEQVRYhe3VMQ6AIAwF0E7G4O4V9Aq6eQY3E2c3b+BuYmJAIfxJaUuL6S/9Fdq8tgV4mWMMAJi7u7t7VSmlJYQwF2OttaSUmqSUWkqptZRSa6211lprrbXWWmuttdZaa6211lprrbXWWmuttdZaa6211lprrbXWWmuttdb6q1dVA2MMm4cAAAAASUVORK5CYII=',
+    
+    // Ресурс редкий металл
+    rareMetal: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABmJLR0QA/wD/AP+gvaeTAAAAhklEQVRYhe3VMQ6AIAwF0E7G4O4V9Aq6eQY3E2c3b+BuYmJAIfxJaUuL6S/9Fdq8tgV4mWMMAJi7u7t7VSmlJYQwF2OttaSUmqSUWkqptZRSa6211lprrbXWWmuttdZaa6211lprrbXWWmuttdZaa6211lprrbXWWmuttdb6q1dVA2MMm4cAAAAASUVORK5CYII=',
+    
+    // Текстура Марса (поверхность)
+    marsTerrain: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABmJLR0QA/wD/AP+gvaeTAAAAhklEQVRYhe3VMQ6AIAwF0E7G4O4V9Aq6eQY3E2c3b+BuYmJAIfxJaUuL6S/9Fdq8tgV4mWMMAJi7u7t7VSmlJYQwF2OttaSUmqSUWkqptZRSa6211lprrbXWWmuttdZaa6211lprrbXWWmuttdZaa6211lprrbXWWmuttdb6q1dVA2MMm4cAAAAASUVORK5CYII='
+};
