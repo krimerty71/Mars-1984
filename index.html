@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>MARS: 1984</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="game-container">
+        <canvas id="gameCanvas"></canvas>
+        <div class="ui-overlay" id="gameUI">
+            <div class="resources">
+                <div class="resource">⛏️ <span id="iron">5</span></div>
+                <div class="resource">💎 <span id="silicon">2</span></div>
+                <div class="resource">🔮 <span id="rareMetal">0</span></div>
+                <div class="resource">❤️ <span id="health">100</span></div>
+                <div class="resource">⚡ <span id="energy">50</span></div>
+            </div>
+            <div class="wave-indicator">🌊 Волна: <span id="wave">1</span></div>
+            <div class="enemy-count">👾 <span id="enemies">0</span></div>
+        </div>
+        <div class="control-panel" id="controlPanel">
+            <button class="action-btn" id="gatherBtn"><span>⛏️</span> Собрать</button>
+            <button class="action-btn" id="buildMinerBtn"><span>🏭</span> Шахта</button>
+            <button class="action-btn" id="buildBaseBtn"><span>🏛️</span> База</button>
+            <button class="action-btn" id="attackBtn"><span>⚔️</span> Атака</button>
+            <button class="action-btn" id="pauseBtn"><span>⏸️</span></button>
+        </div>
+        <div class="joystick-area" id="joystickArea">
+            <div class="joystick" id="joystick"></div>
+        </div>
+    </div>
+    <div class="menu-overlay hidden" id="menuOverlay">...</div>
+    <div class="gameover-overlay hidden" id="gameOverOverlay">...</div>
+    <script src="game.js"></script>
+</body>
+</html>
