@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>MARS: 1984 - Мобильная колонизация</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="game-container">
+        <!-- Загрузочный экран -->
+        <div class="loading-screen" id="loadingScreen">
+            <div class="mars-logo">🔴 MARS: 1984</div>
+            <div class="loading-bar">
+                <div class="loading-progress" id="loadingProgress"></div>
+            </div>
+            <div class="loading-text">Загрузка текстур Марса...</div>
+        </div>
+
+        <!-- Холст для игры -->
+        <canvas id="gameCanvas"></canvas>
+        
+        <!-- Интерфейс -->
+        <div class="ui-overlay hidden" id="gameUI">
+            <div class="resources">
+                <div class="resource">⛏️ <span id="iron">0</span></div>
+                <div class="resource">💎 <span id="silicon">0</span></div>
+                <div class="resource">🔮 <span id="rareMetal">0</span></div>
+                <div class="resource">❤️ <span id="health">100</span></div>
+                <div class="resource">⚡ <span id="energy">50</span></div>
+            </div>
+            
+            <div class="wave-indicator" id="waveIndicator">
+                🌊 Волна: <span id="wave">1</span>
+            </div>
+
+            <div class="enemy-count" id="enemyCount">
+                👾 <span id="enemies">0</span>
+            </div>
+        </div>
+        
+        <!-- Панель управления -->
+        <div class="control-panel hidden" id="controlPanel">
+            <button class="action-btn" id="gatherBtn">
+                <span>⛏️</span> Собрать
+            </button>
+            <button class="action-btn" id="buildMinerBtn">
+                <span>🏭</span> Шахта (3⛏️)
+            </button>
+            <button class="action-btn" id="buildBaseBtn">
+                <span>🏛️</span> База (5⛏️+2💎)
+            </button>
+            <button class="action-btn" id="pauseBtn">
+                <span>⏸️</span>
+            </button>
+        </div>
+        
+        <!-- Джойстик -->
+        <div class="joystick-area hidden" id="joystickArea">
+            <div class="joystick" id="joystick"></div>
+        </div>
+    </div>
+    
+    <!-- Меню паузы -->
+    <div class="menu-overlay hidden" id="menuOverlay">
+        <div class="menu">
+            <h1>🔴 MARS: 1984</h1>
+            <div class="stats">
+                <p>День: <span id="statDay">1</span></p>
+                <p>Убито врагов: <span id="statKills">0</span></p>
+                <p>Построек: <span id="statBuildings">0</span></p>
+            </div>
+            <button onclick="game.resume()">▶ Продолжить</button>
+            <button onclick="game.save()">💾 Сохранить</button>
+            <button onclick="game.load()">📂 Загрузить</button>
+            <button onclick="game.restart()">🔄 Новая игра</button>
+        </div>
+    </div>
+
+    <!-- Game Over экран -->
+    <div class="gameover-overlay hidden" id="gameOverOverlay">
+        <div class="menu">
+            <h1>💀 ИГРА ОКОНЧЕНА</h1>
+            <p>Вы продержались <span id="finalWave">1</span> волн</p>
+            <p>Уничтожено врагов: <span id="finalKills">0</span></p>
+            <button onclick="game.restart()">🔄 Начать заново</button>
+        </div>
+    </div>
+    
+    <!-- Подключаем текстуры и игру -->
+    <script src="textures.js"></script>
+    <script src="game.js"></script>
+</body>
+          </html>
