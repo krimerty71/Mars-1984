@@ -9,6 +9,7 @@
 <body>
     <div class="game-container">
         <canvas id="gameCanvas"></canvas>
+        
         <div class="ui-overlay" id="gameUI">
             <div class="resources">
                 <div class="resource">⛏️ <span id="iron">5</span></div>
@@ -20,6 +21,7 @@
             <div class="wave-indicator">🌊 Волна: <span id="wave">1</span></div>
             <div class="enemy-count">👾 <span id="enemies">0</span></div>
         </div>
+        
         <div class="control-panel" id="controlPanel">
             <button class="action-btn" id="gatherBtn"><span>⛏️</span> Собрать</button>
             <button class="action-btn" id="buildMinerBtn"><span>🏭</span> Шахта</button>
@@ -27,12 +29,38 @@
             <button class="action-btn" id="attackBtn"><span>⚔️</span> Атака</button>
             <button class="action-btn" id="pauseBtn"><span>⏸️</span></button>
         </div>
+        
         <div class="joystick-area" id="joystickArea">
             <div class="joystick" id="joystick"></div>
         </div>
     </div>
-    <div class="menu-overlay hidden" id="menuOverlay">...</div>
-    <div class="gameover-overlay hidden" id="gameOverOverlay">...</div>
+    
+    <!-- Меню паузы -->
+    <div class="menu-overlay hidden" id="menuOverlay">
+        <div class="menu">
+            <h1>🔴 MARS: 1984</h1>
+            <div class="stats">
+                <p>День: <span id="statDay">1</span></p>
+                <p>Убито врагов: <span id="statKills">0</span></p>
+                <p>Построек: <span id="statBuildings">0</span></p>
+            </div>
+            <button onclick="game.resume()">▶ Продолжить</button>
+            <button onclick="game.save()">💾 Сохранить</button>
+            <button onclick="game.load()">📂 Загрузить</button>
+            <button onclick="game.restart()">🔄 Новая игра</button>
+        </div>
+    </div>
+
+    <!-- Game Over экран -->
+    <div class="gameover-overlay hidden" id="gameOverOverlay">
+        <div class="menu">
+            <h1>💀 ИГРА ОКОНЧЕНА</h1>
+            <p>Вы продержались <span id="finalWave">1</span> волн</p>
+            <p>Уничтожено врагов: <span id="finalKills">0</span></p>
+            <button onclick="game.restart()">🔄 Начать заново</button>
+        </div>
+    </div>
+    
     <script src="game.js"></script>
 </body>
-        </html>
+</html>
