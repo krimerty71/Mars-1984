@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MARS TEST</title>
+    <style>
+        body { margin: 0; padding: 0; background: black; }
+        canvas { display: block; margin: 0 auto; background: #2a1a0f; }
+    </style>
+</head>
+<body>
+    <canvas id="gameCanvas" width="400" height="700"></canvas>
+
+    <script>
+        // ПРОСТЕЙШАЯ ПРОВЕРКА
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        // Рисуем что-то простое
+        ctx.fillStyle = 'red';
+        ctx.fillRect(50, 50, 100, 100);
+        
+        ctx.fillStyle = 'white';
+        ctx.font = '20px Arial';
+        ctx.fillText('РАБОТАЕТ', 50, 200);
+        
+        console.log('СКРИПТ ЗАПУЩЕН');
+    </script>
+</body>
+</html>
