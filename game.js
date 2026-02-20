@@ -1,4 +1,4 @@
-// MARS: 1984 - Полная мобильная игра
+// MARS: 1984 - Полная мобильная игра (версия с мгновенной загрузкой)
 class Game {
     constructor() {
         this.canvas = document.getElementById('gameCanvas');
@@ -48,59 +48,25 @@ class Game {
         
         // Таймеры
         this.lastEnemySpawn = 0;
-        this.enemySpawnInterval = 2000; // 2 секунды
+        this.enemySpawnInterval = 2000;
         this.lastUpdate = 0;
-        
-        // Загрузка текстур
-        this.textures = {};
-        this.loadTextures();
         
         // Привязка методов
         this.gameLoop = this.gameLoop.bind(this);
         this.handleTouch = this.handleTouch.bind(this);
         this.handleTouchEnd = this.handleTouchEnd.bind(this);
         
+        // Сразу запускаем игру без загрузки
+        setTimeout(() => {
+            document.getElementById('loadingScreen').classList.add('hidden');
+            document.getElementById('gameUI').classList.remove('hidden');
+            document.getElementById('controlPanel').classList.remove('hidden');
+            document.getElementById('joystickArea').classList.remove('hidden');
+            this.startGame();
+        }, 100); // Всего 0.1 секунды задержки!
+        
         // Инициализация
         this.init();
-    }
-    
-    loadTextures() {
-        const textureList = {
-            player: TEXTURES.player,
-            enemyScout: TEXTURES.enemyScout,
-            enemyWarrior: TEXTURES.enemyWarrior,
-            enemyBoss: TEXTURES.enemyBoss,
-            miner: TEXTURES.miner,
-            base: TEXTURES.base,
-            iron: TEXTURES.iron,
-            silicon: TEXTURES.silicon,
-            rareMetal: TEXTURES.rareMetal,
-            marsTerrain: TEXTURES.marsTerrain
-        };
-        
-        let loaded = 0;
-        const total = Object.keys(textureList).length;
-        
-        for (let [key, data] of Object.entries(textureList)) {
-            const img = new Image();
-            img.onload = () => {
-                loaded++;
-                const progress = (loaded / total) * 100;
-                document.getElementById('loadingProgress').style.width = progress + '%';
-                
-                if (loaded === total) {
-                    setTimeout(() => {
-                        document.getElementById('loadingScreen').classList.add('hidden');
-                        document.getElementById('gameUI').classList.remove('hidden');
-                        document.getElementById('controlPanel').classList.remove('hidden');
-                        document.getElementById('joystickArea').classList.remove('hidden');
-                        this.startGame();
-                    }, 500);
-                }
-            };
-            img.src = data;
-            this.textures[key] = img;
-        }
     }
     
     init() {
@@ -112,14 +78,12 @@ class Game {
         for (let y = 0; y < this.mapHeight; y++) {
             this.map[y] = [];
             for (let x = 0; x < this.mapWidth; x++) {
-                // Процедурная генерация
                 const terrain = Math.random();
                 let type = 'plain';
                 if (terrain < 0.2) type = 'crater';
                 else if (terrain < 0.4) type = 'hill';
                 else if (terrain < 0.5) type = 'mountain';
                 
-                // Ресурсы
                 let resource = null;
                 if (type === 'plain' && Math.random() < 0.1) resource = 'iron';
                 else if (type === 'hill' && Math.random() < 0.15) resource = 'silicon';
@@ -137,7 +101,6 @@ class Game {
     }
     
     setupControls() {
-        // Джойстик
         this.joystickArea.addEventListener('touchstart', (e) => {
             e.preventDefault();
             this.joystickActive = true;
@@ -157,7 +120,6 @@ class Game {
             this.joystick.style.left = '35px';
         });
         
-        // Кнопки действий
         document.getElementById('gatherBtn').addEventListener('touchstart', (e) => {
             e.preventDefault();
             this.gatherResource();
@@ -185,11 +147,9 @@ class Game {
         const touch = e.touches[0];
         const rect = this.joystickArea.getBoundingClientRect();
         
-        // Координаты относительно джойстика
         let x = touch.clientX - rect.left - 60;
         let y = touch.clientY - rect.top - 60;
         
-        // Ограничение радиуса
         const distance = Math.sqrt(x*x + y*y);
         const maxDistance = 40;
         
@@ -201,7 +161,6 @@ class Game {
         this.joystick.style.left = (35 + x) + 'px';
         this.joystick.style.top = (35 + y) + 'px';
         
-        // Нормализованное направление
         this.joystickDir = {
             x: x / maxDistance,
             y: y / maxDistance
@@ -216,39 +175,32 @@ class Game {
     update() {
         if (!this.gameRunning || this.paused || this.gameOver) return;
         
-        // Движение игрока
         if (this.joystickActive) {
             const speed = 3;
             this.player.x += this.joystickDir.x * speed;
             this.player.y += this.joystickDir.y * speed;
             
-            // Границы карты
             this.player.x = Math.max(0, Math.min(this.player.x, (this.mapWidth - 1) * this.cellSize));
             this.player.y = Math.max(0, Math.min(this.player.y, (this.mapHeight - 1) * this.cellSize));
         }
         
-        // Обновление камеры
         this.cameraX = this.player.x - 200;
         this.cameraY = this.player.y - 350;
         
-        // Спавн врагов
         const now = Date.now();
         if (now - this.lastEnemySpawn > this.enemySpawnInterval) {
             this.spawnEnemy();
             this.lastEnemySpawn = now;
             
-            // Увеличиваем сложность
             if (this.enemies.length > this.wave * 3) {
                 this.wave++;
                 this.enemySpawnInterval = Math.max(500, 2000 - this.wave * 100);
             }
         }
         
-        // Обновление врагов
         for (let i = this.enemies.length - 1; i >= 0; i--) {
             const enemy = this.enemies[i];
             
-            // Движение к игроку
             const dx = this.player.x - enemy.x;
             const dy = this.player.y - enemy.y;
             const dist = Math.sqrt(dx*dx + dy*dy);
@@ -258,7 +210,6 @@ class Game {
                 enemy.y += (dy / dist) * enemy.speed;
             }
             
-            // Атака игрока
             if (dist < 30) {
                 this.player.health -= 0.5;
                 if (this.player.health <= 0) {
@@ -269,54 +220,48 @@ class Game {
                 }
             }
             
-            // Удаление мертвых врагов
             if (enemy.health <= 0) {
                 this.enemies.splice(i, 1);
                 this.kills++;
             }
         }
         
-        // Автоматическая добыча от построек
         for (let building of this.buildings) {
             if (building.type === 'miner' && Math.random() < 0.01) {
                 this.player.resources.iron += 1;
             }
         }
         
-        // Восстановление энергии
         if (this.player.energy < this.player.maxEnergy) {
             this.player.energy += 0.1;
         }
         
-        // Обновление UI
         this.updateUI();
     }
     
     spawnEnemy() {
-        // Выбор стороны для спавна
         const side = Math.floor(Math.random() * 4);
         let x, y;
         
         switch(side) {
-            case 0: // Сверху
+            case 0:
                 x = Math.random() * this.mapWidth * this.cellSize;
                 y = -this.cellSize;
                 break;
-            case 1: // Справа
+            case 1:
                 x = this.mapWidth * this.cellSize + this.cellSize;
                 y = Math.random() * this.mapHeight * this.cellSize;
                 break;
-            case 2: // Снизу
+            case 2:
                 x = Math.random() * this.mapWidth * this.cellSize;
                 y = this.mapHeight * this.cellSize + this.cellSize;
                 break;
-            case 3: // Слева
+            case 3:
                 x = -this.cellSize;
                 y = Math.random() * this.mapHeight * this.cellSize;
                 break;
         }
         
-        // Тип врага в зависимости от волны
         let type = 'scout';
         const rand = Math.random();
         if (this.wave > 3) {
@@ -328,16 +273,13 @@ class Game {
             else type = 'warrior';
         }
         
-        const enemy = {
+        this.enemies.push({
             x: x,
             y: y,
             type: type,
             health: type === 'scout' ? 15 : (type === 'warrior' ? 40 : 100),
-            speed: type === 'scout' ? 3 : (type === 'warrior' ? 1.5 : 1),
-            texture: this.textures['enemy' + type.charAt(0).toUpperCase() + type.slice(1)]
-        };
-        
-        this.enemies.push(enemy);
+            speed: type === 'scout' ? 3 : (type === 'warrior' ? 1.5 : 1)
+        });
     }
     
     gatherResource() {
@@ -420,7 +362,7 @@ class Game {
             buildings: this.buildings
         };
         localStorage.setItem('mars1984_save', JSON.stringify(saveData));
-        alert('Игра сохранена!');
+        alert('💾 Игра сохранена!');
     }
     
     load() {
@@ -435,7 +377,7 @@ class Game {
             this.buildings = data.buildings;
             this.paused = false;
             document.getElementById('menuOverlay').classList.add('hidden');
-            alert('Загрузка завершена!');
+            alert('📂 Загрузка завершена!');
         }
     }
     
@@ -480,82 +422,205 @@ class Game {
         document.getElementById('statBuildings').textContent = this.buildings.length;
     }
     
-    draw() {
-        // Очистка
-        this.ctx.fillStyle = '#2a1a0f';
-        this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+    // ========== ОТРИСОВКА ВСЕХ СПРАЙТОВ КОДОМ ==========
+    
+    drawPlayer(x, y) {
+        // Тело (скафандр)
+        this.ctx.fillStyle = '#4a90e2';
+        this.ctx.fillRect(x + 8, y + 4, 16, 20);
         
-        // Отрисовка карты
-        for (let y = 0; y < this.mapHeight; y++) {
-            for (let x = 0; x < this.mapWidth; x++) {
-                const cell = this.map[y][x];
-                const screenX = x * this.cellSize - this.cameraX;
-                const screenY = y * this.cellSize - this.cameraY;
-                
-                if (screenX > -this.cellSize && screenX < this.canvas.width && 
-                    screenY > -this.cellSize && screenY < this.canvas.height) {
-                    
-                    // Текстура поверхности
-                    this.ctx.drawImage(this.textures.marsTerrain, screenX, screenY, this.cellSize, this.cellSize);
-                    
-                    // Затемнение в зависимости от типа
-                    if (cell.type === 'crater') {
-                        this.ctx.fillStyle = 'rgba(0,0,0,0.3)';
-                        this.ctx.fillRect(screenX, screenY, this.cellSize, this.cellSize);
-                    } else if (cell.type === 'hill') {
-                        this.ctx.fillStyle = 'rgba(100,50,0,0.2)';
-                        this.ctx.fillRect(screenX, screenY, this.cellSize, this.cellSize);
-                    } else if (cell.type === 'mountain') {
-                        this.ctx.fillStyle = 'rgba(150,75,0,0.3)';
-                        this.ctx.fillRect(screenX, screenY, this.cellSize, this.cellSize);
-                    }
-                    
-                    // Ресурсы
-                    if (cell.resource) {
-                        let texture;
-                        if (cell.resource === 'iron') texture = this.textures.iron;
-                        else if (cell.resource === 'silicon') texture = this.textures.silicon;
-                        else if (cell.resource === 'rareMetal') texture = this.textures.rareMetal;
-                        
-                        this.ctx.drawImage(texture, screenX, screenY, this.cellSize, this.cellSize);
-                    }
-                    
-                    // Постройки
-                    if (cell.building) {
-                        const texture = cell.building === 'miner' ? this.textures.miner : this.textures.base;
-                        this.ctx.drawImage(texture, screenX, screenY, this.cellSize, this.cellSize);
-                    }
-                    
-                    // Сетка
-                    this.ctx.strokeStyle = 'rgba(255,255,255,0.1)';
-                    this.ctx.strokeRect(screenX, screenY, this.cellSize, this.cellSize);
+        // Шлем
+        this.ctx.fillStyle = '#ffffff';
+        this.ctx.fillRect(x + 10, y + 2, 12, 6);
+        
+        // Стекло шлема
+        this.ctx.fillStyle = '#87CEEB';
+        this.ctx.fillRect(x + 12, y + 4, 4, 3);
+        this.ctx.fillRect(x + 16, y + 4, 4, 3);
+        
+        // Ноги
+        this.ctx.fillStyle = '#f5a623';
+        this.ctx.fillRect(x + 12, y + 24, 4, 6);
+        this.ctx.fillRect(x + 16, y + 24, 4, 6);
+        
+        // Рюкзак
+        this.ctx.fillStyle = '#2c3e50';
+        this.ctx.fillRect(x + 4, y + 8, 4, 12);
+        
+        // Глаза
+        this.ctx.fillStyle = '#000000';
+        this.ctx.fillRect(x + 12, y + 8, 2, 2);
+        this.ctx.fillRect(x + 18, y + 8, 2, 2);
+    }
+    
+    drawEnemyScout(x, y) {
+        // Маленький красный враг
+        this.ctx.fillStyle = '#ff4444';
+        this.ctx.beginPath();
+        this.ctx.arc(x + 16, y + 16, 10, 0, Math.PI * 2);
+        this.ctx.fill();
+        
+        // Глаза
+        this.ctx.fillStyle = '#000000';
+        this.ctx.fillRect(x + 12, y + 12, 3, 3);
+        this.ctx.fillRect(x + 18, y + 12, 3, 3);
+        
+        // Щупальца
+        this.ctx.strokeStyle = '#880000';
+        this.ctx.lineWidth = 2;
+        this.ctx.beginPath();
+        this.ctx.moveTo(x + 8, y + 8);
+        this.ctx.lineTo(x + 4, y + 4);
+        this.ctx.stroke();
+        
+        this.ctx.beginPath();
+        this.ctx.moveTo(x + 24, y + 8);
+        this.ctx.lineTo(x + 28, y + 4);
+        this.ctx.stroke();
+    }
+    
+    drawEnemyWarrior(x, y) {
+        // Большой красный враг
+        this.ctx.fillStyle = '#cc0000';
+        this.ctx.beginPath();
+        this.ctx.arc(x + 16, y + 16, 13, 0, Math.PI * 2);
+        this.ctx.fill();
+        
+        // Броня
+        this.ctx.fillStyle = '#990000';
+        this.ctx.fillRect(x + 8, y + 6, 16, 6);
+        
+        // Глаза
+        this.ctx.fillStyle = '#ffff00';
+        this.ctx.fillRect(x + 10, y + 12, 4, 4);
+        this.ctx.fillRect(x + 18, y + 12, 4, 4);
+        
+        // Клыки
+        this.ctx.fillStyle = '#ffffff';
+        this.ctx.fillRect(x + 12, y + 20, 2, 4);
+        this.ctx.fillRect(x + 18, y + 20, 2, 4);
+    }
+    
+    drawEnemyBoss(x, y) {
+        // Огромный босс
+        this.ctx.fillStyle = '#8b0000';
+        this.ctx.beginPath();
+        this.ctx.arc(x + 16, y + 16, 15, 0, Math.PI * 2);
+        this.ctx.fill();
+        
+        // Корона
+        this.ctx.fillStyle = '#ffd700';
+        this.ctx.fillRect(x + 10, y + 2, 12, 4);
+        for (let i = 0; i < 3; i++) {
+            this.ctx.fillRect(x + 10 + i*5, y - 2, 3, 6);
+        }
+        
+        // Глаза
+        this.ctx.fillStyle = '#ff0000';
+        this.ctx.fillRect(x + 10, y + 10, 4, 4);
+        this.ctx.fillRect(x + 18, y + 10, 4, 4);
+        
+        // Пасть
+        this.ctx.fillStyle = '#000000';
+        this.ctx.fillRect(x + 12, y + 20, 8, 3);
+    }
+    
+    drawMiner(x, y) {
+        // Шахта
+        this.ctx.fillStyle = '#7ed321';
+        this.ctx.fillRect(x + 8, y + 12, 16, 16);
+        
+        // Труба
+        this.ctx.fillStyle = '#4a4a4a';
+        this.ctx.fillRect(x + 14, y + 4, 4, 8);
+        
+        // Огонек работы
+        this.ctx.fillStyle = '#f8e71c';
+        this.ctx.beginPath();
+        this.ctx.arc(x + 16, y + 20, 3, 0, Math.PI * 2);
+        this.ctx.fill();
+    }
+    
+    drawBase(x, y) {
+        // База
+        this.ctx.fillStyle = '#4a90e2';
+        this.ctx.fillRect(x + 4, y + 12, 24, 16);
+        
+        // Купол
+        this.ctx.fillStyle = '#f5a623';
+        this.ctx.beginPath();
+        this.ctx.arc(x + 16, y + 10, 8, 0, Math.PI, true);
+        this.ctx.fill();
+        
+        // Дверь
+        this.ctx.fillStyle = '#8B4513';
+        this.ctx.fillRect(x + 14, y + 20, 4, 8);
+        
+        // Окна
+        this.ctx.fillStyle = '#87CEEB';
+        this.ctx.fillRect(x + 6, y + 16, 3, 3);
+        this.ctx.fillRect(x + 23, y + 16, 3, 3);
+    }
+    
+    drawIron(x, y) {
+        // Железо
+        this.ctx.fillStyle = '#9b9b9b';
+        this.ctx.beginPath();
+        this.ctx.arc(x + 16, y + 16, 6, 0, Math.PI * 2);
+        this.ctx.fill();
+        
+        this.ctx.fillStyle = '#4a4a4a';
+        this.ctx.fillRect(x + 10, y + 14, 12, 4);
+    }
+    
+    drawSilicon(x, y) {
+        // Кремний
+        this.ctx.fillStyle = '#bd10e0';
+        this.ctx.beginPath();
+        this.ctx.moveTo(x + 16, y + 8);
+        this.ctx.lineTo(x + 24, y + 16);
+        this.ctx.lineTo(x + 16, y + 24);
+        this.ctx.lineTo(x + 8, y + 16);
+        this.ctx.closePath();
+        this.ctx.fill();
+    }
+    
+    drawRareMetal(x, y) {
+        // Редкий металл
+        this.ctx.fillStyle = '#f5a623';
+        for (let i = 0; i < 3; i++) {
+            for (let j = 0; j < 3; j++) {
+                if (Math.random() > 0.5) {
+                    this.ctx.fillRect(x + 8 + i*6, y + 8 + j*6, 3, 3);
+                }
+            }
+        }
+    }
+    
+    drawTerrain(x, y, type) {
+        // Базовая поверхность
+        const colors = {
+            'plain': '#c44d34',
+            'crater': '#a33d2a',
+            'hill': '#b34d34',
+            'mountain': '#8b3d2a'
+        };
+        
+        this.ctx.fillStyle = colors[type] || '#c44d34';
+        this.ctx.fillRect(x, y, this.cellSize, this.cellSize);
+        
+        // Добавляем текстуру
+        this.ctx.fillStyle = 'rgba(0,0,0,0.1)';
+        for (let i = 0; i < 4; i++) {
+            for (let j = 0; j < 4; j++) {
+                if (Math.random() > 0.7) {
+                    this.ctx.fillRect(x + i*8, y + j*8, 2, 2);
                 }
             }
         }
         
-        // Отрисовка врагов
-        for (let enemy of this.enemies) {
-            const screenX = enemy.x - this.cameraX;
-            const screenY = enemy.y - this.cameraY;
-            
-            if (screenX > -this.cellSize && screenX < this.canvas.width && 
-                screenY > -this.cellSize && screenY < this.canvas.height) {
-                
-                this.ctx.drawImage(enemy.texture, screenX, screenY, this.cellSize, this.cellSize);
-                
-                // Полоска здоровья
-                const healthPercent = enemy.health / (enemy.type === 'scout' ? 15 : (enemy.type === 'warrior' ? 40 : 100));
-                this.ctx.fillStyle = '#ff0000';
-                this.ctx.fillRect(screenX, screenY - 5, this.cellSize * healthPercent, 3);
-            }
-        }
-        
-        // Отрисовка игрока
-        const playerScreenX = this.player.x - this.cameraX;
-        const playerScreenY = this.player.y - this.cameraY;
-        this.ctx.drawImage(this.textures.player, playerScreenX, playerScreenY, this.cellSize, this.cellSize);
-        
-        // Полоска здоровья игрока
-        const healthPercent = this.player.health / this.player.maxHealth;
-        this.ctx.fillStyle = '#00ff00';
-        this.ctx.fillRect(playerScreenX, playerScre
+        // Кратеры
+        if (type === 'crater') {
+            this.ctx.fillStyle = 'rgba(0,0,0,0.2)';
+            this.ctx.beginPath();
+          
